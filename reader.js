@@ -1,18 +1,20 @@
 const SUPABASE_URL = "https://irkgidjwtdiowhwmzmbc.supabase.co";
-const SUPABASE_ANON_KEY = "твоя_строка_ключа_как_есть";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2dpZGp3dGRpb3dod216bWJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMzMwMjIsImV4cCI6MjA4MTcwOTAyMn0.jk-RH-KybnAhAUlMgSfdHU6AQYZ37FV9aufPJEvDPrI";
 
 let supabase = null;
 try {
   if (window.supabase && typeof window.supabase.createClient === "function") {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabase = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
   } else {
-    console.warn("Supabase SDK not loaded. Comments/auth disabled.");
+    console.warn("Supabase SDK not loaded");
   }
 } catch (e) {
-  console.warn("Supabase init failed. Comments/auth disabled.", e);
+  console.warn("Supabase init failed", e);
   supabase = null;
 }
-
 
 // ==============================
 // DOM helpers
@@ -26,7 +28,6 @@ const nextBtn = $("next");
 const empty = $("empty");
 const chapterNameEl = $("chapterName");
 
-// Comments/Auth UI
 const authBtn = $("authBtn");
 const logoutBtn = $("logoutBtn");
 const authBox = $("authBox");
@@ -39,6 +40,9 @@ const commentBody = $("commentBody");
 const commentStatus = $("commentStatus");
 const commentsList = $("commentsList");
 
+// ==============================
+// Utils
+// ==============================
 function safeShow(el, show) {
   if (!el) return;
   el.style.display = show ? "block" : "none";
@@ -51,6 +55,21 @@ function safeHtml(el, html) {
   if (!el) return;
   el.innerHTML = html;
 }
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#039;",
+  }[c]));
+}
+function qp(name) {
+  return new URLSearchParams(location.search).get(name);
+}
+function keyForProgress(chId) {
+  return `manga_progress_${chId}`;
+}
 
 // ==============================
 // State
@@ -62,179 +81,88 @@ let i = 0;
 let currentUser = null;
 
 // ==============================
-// Utils
-// ==============================
-function qp(name) {
-  return new URLSearchParams(location.search).get(name);
-}
-
-function keyForProgress(chId) {
-  return `manga_progress_${chId}`;
-}
-
-function saveLastRead(chId, pageIndex) {
-  const payload = { chapterId: chId, pageIndex, ts: Date.now() };
-  localStorage.setItem("manga_last_read", JSON.stringify(payload));
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "\"": "&quot;",
-    "'": "&#039;",
-  }[c]));
-}
-
-function getCurrentChapter() {
-  return manifest?.chapters?.[chapterIndex] || null;
-}
-
-function getCurrentChapterId() {
-  return getCurrentChapter()?.id || null;
-}
-
-// ==============================
 // Rendering
 // ==============================
-function renderEmpty(msg = "Проверь папку главы в manga/.") {
+function renderEmpty(msg) {
   if (img) img.style.display = "none";
   safeShow(empty, true);
   safeText(counter, "0 / 0");
   if (prevBtn) prevBtn.disabled = true;
   if (nextBtn) nextBtn.disabled = true;
-
-  // optional: если хочешь текст внутри empty менять — можно,
-  // но не обязательно. Просто покажем блок.
-  if (commentsList) {
-    safeText(commentsList, msg);
-  }
+  if (commentsList) safeText(commentsList, msg || "");
 }
 
 function render() {
-  // глава/страницы
-  if (!pages || pages.length === 0) {
+  if (!pages.length) {
     renderEmpty("В этой главе пока нет страниц.");
-    // комменты всё равно попробуем показать (будет “нет страниц”)
-    loadComments().catch(() => {});
+    loadComments();
     return;
   }
 
-  // нормальный показ
   if (img) img.style.display = "block";
   safeShow(empty, false);
 
-  const src = pages[i];
-  if (img) img.src = src;
-
+  img.src = pages[i];
   safeText(counter, `${i + 1} / ${pages.length}`);
   if (prevBtn) prevBtn.disabled = (i === 0);
   if (nextBtn) nextBtn.disabled = false;
 
-  const chId = getCurrentChapterId();
-  if (chId) {
-    localStorage.setItem(keyForProgress(chId), String(i));
-    saveLastRead(chId, i);
-  }
+  const chId = manifest.chapters[chapterIndex].id;
+  localStorage.setItem(keyForProgress(chId), String(i));
 
-  // обновляем комменты под текущую страницу
-  loadComments().catch(() => {});
-}
-
-function goToChapter(idx, startAt = 0) {
-  const ch = manifest?.chapters?.[idx];
-  if (!ch) {
-    pages = [];
-    chapterIndex = 0;
-    i = 0;
-    renderEmpty("Глава не найдена.");
-    return;
-  }
-
-  chapterIndex = idx;
-  pages = ch.pages || [];
-
-  // если страниц нет — i оставим 0
-  if (pages.length > 0) {
-    i = Math.max(0, Math.min(startAt, pages.length - 1));
-  } else {
-    i = 0;
-  }
-
-  document.title = `${manifest?.title || "Manga"} — ${ch.name || ch.id}`;
-  safeText(chapterNameEl, ch.name || ch.id);
-
-  // чистим URL (оставляем chapter)
-  const url = new URL(location.href);
-  url.searchParams.set("chapter", ch.id);
-  url.searchParams.delete("page");
-  history.replaceState({}, "", url);
-
-  render();
+  loadComments();
 }
 
 // ==============================
 // Navigation
 // ==============================
-function nextChapter() {
-  if (!manifest?.chapters?.length) return;
-  if (chapterIndex < manifest.chapters.length - 1) {
-    goToChapter(chapterIndex + 1, 0);
-  } else {
-    // последняя глава — остаёмся
-  }
+function goToChapter(idx, startAt = 0) {
+  const ch = manifest.chapters[idx];
+  chapterIndex = idx;
+  pages = ch.pages || [];
+  i = pages.length ? Math.max(0, Math.min(startAt, pages.length - 1)) : 0;
+
+  document.title = `${manifest.title} — ${ch.name}`;
+  safeText(chapterNameEl, ch.name);
+
+  const url = new URL(location.href);
+  url.searchParams.set("chapter", ch.id);
+  history.replaceState({}, "", url);
+
+  render();
 }
 
 function next() {
-  if (!pages || pages.length === 0) return;
+  if (!pages.length) return;
   if (i < pages.length - 1) {
     i++;
     render();
-  } else {
-    nextChapter();
+  } else if (chapterIndex < manifest.chapters.length - 1) {
+    goToChapter(chapterIndex + 1, 0);
   }
 }
 
 function prev() {
-  if (!manifest?.chapters?.length) return;
-
-  if (pages && pages.length > 0 && i > 0) {
+  if (i > 0) {
     i--;
     render();
-    return;
-  }
-
-  // если на первой странице — идём в предыдущую главу на последнюю страницу
-  if (chapterIndex > 0) {
-    const prevIdx = chapterIndex - 1;
-    const prevCh = manifest.chapters[prevIdx];
-    const last = Math.max(0, (prevCh.pages?.length || 1) - 1);
-    goToChapter(prevIdx, last);
+  } else if (chapterIndex > 0) {
+    const prevCh = manifest.chapters[chapterIndex - 1];
+    goToChapter(chapterIndex - 1, Math.max(0, prevCh.pages.length - 1));
   }
 }
 
 // ==============================
-// Auth / Comments (Supabase)
+// Auth / Comments
 // ==============================
 async function refreshAuthUI() {
-  // если supabase не доступен — просто спрячем формы
   if (!supabase) {
-    currentUser = null;
-    if (authBtn) authBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "none";
     safeShow(authBox, false);
     safeShow(commentForm, false);
-    if (commentsList && commentsList.textContent === "Загрузка…") {
-      safeText(commentsList, "Комментарии недоступны (Supabase не подключён).");
-    }
     return;
   }
 
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    console.warn("getUser error:", error);
-  }
+  const { data } = await supabase.auth.getUser();
   currentUser = data?.user || null;
 
   if (currentUser) {
@@ -242,7 +170,6 @@ async function refreshAuthUI() {
     if (logoutBtn) logoutBtn.style.display = "inline-block";
     safeShow(authBox, false);
     safeShow(commentForm, true);
-    safeText(authStatus, "");
   } else {
     if (authBtn) authBtn.style.display = "inline-block";
     if (logoutBtn) logoutBtn.style.display = "none";
@@ -251,102 +178,49 @@ async function refreshAuthUI() {
 }
 
 async function loadComments() {
-  const chId = getCurrentChapterId();
-
-  if (!commentsList) return; // если блока нет — просто выходим
-
-  if (!supabase) {
-    safeText(commentsList, "Комментарии недоступны (Supabase не подключён).");
+  if (!supabase || !commentsList || !pages.length) {
+    if (commentsList) safeText(commentsList, "Комментариев нет.");
     return;
   }
 
-  if (!chId || !manifest) {
-    safeText(commentsList, "Загрузка…");
-    return;
-  }
-
-  // если страниц нет — комменты не грузим
-  if (!pages || pages.length === 0) {
-    safeText(commentsList, "В этой главе пока нет страниц.");
-    return;
-  }
-
+  const chId = manifest.chapters[chapterIndex].id;
   safeText(commentsList, "Загрузка...");
+
   const { data, error } = await supabase
     .from("comments")
     .select("id, created_at, username, body, user_id")
     .eq("chapter_id", chId)
     .eq("page_index", i)
-    .order("created_at", { ascending: true });
+    .order("created_at");
 
-  if (error) {
-    safeText(commentsList, "Ошибка загрузки: " + error.message);
-    return;
-  }
-
-  if (!data || data.length === 0) {
+  if (error || !data.length) {
     safeText(commentsList, "Комментариев пока нет.");
     return;
   }
 
-  safeHtml(commentsList, data.map(c => {
-    const dt = new Date(c.created_at).toLocaleString();
-    const canDelete = currentUser && currentUser.id === c.user_id;
-    return `
-      <div style="padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;margin:8px 0;">
-        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
-          <b>${escapeHtml(c.username)}</b>
-          <span class="small">${dt}</span>
-        </div>
-        <div style="margin-top:6px;white-space:pre-wrap;">${escapeHtml(c.body)}</div>
-        ${canDelete ? `<button class="btn" data-del="${c.id}" style="margin-top:8px;">Удалить</button>` : ""}
-      </div>
-    `;
-  }).join(""));
-
-  // delete handlers
-  document.querySelectorAll("[data-del]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const id = btn.getAttribute("data-del");
-      await supabase.from("comments").delete().eq("id", id);
-      await loadComments();
-    });
-  });
+  safeHtml(commentsList, data.map(c => `
+    <div style="padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:10px;margin:8px 0;">
+      <b>${escapeHtml(c.username)}</b>
+      <div class="small">${new Date(c.created_at).toLocaleString()}</div>
+      <div>${escapeHtml(c.body)}</div>
+    </div>
+  `).join(""));
 }
 
 // ==============================
-// Wire up events (SAFE)
+// Events
 // ==============================
 if (prevBtn) prevBtn.addEventListener("click", prev);
 if (nextBtn) nextBtn.addEventListener("click", next);
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") next();
-  if (e.key === "ArrowLeft" || e.key === "PageUp") prev();
+  if (e.key === "ArrowRight" || e.key === " ") next();
+  if (e.key === "ArrowLeft") prev();
 });
 
-// swipe
-let startX = 0, startY = 0;
-window.addEventListener("touchstart", (e) => {
-  const t = e.touches[0];
-  startX = t.clientX;
-  startY = t.clientY;
-}, { passive: true });
-
-window.addEventListener("touchend", (e) => {
-  const t = e.changedTouches[0];
-  const dx = t.clientX - startX;
-  const dy = t.clientY - startY;
-  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-    if (dx < 0) next();
-    else prev();
-  }
-}, { passive: true });
-
-// Auth buttons (safe)
 if (authBtn && authBox) {
   authBtn.addEventListener("click", () => {
-    authBox.style.display = (authBox.style.display === "none") ? "block" : "none";
+    authBox.style.display = authBox.style.display === "none" ? "block" : "none";
   });
 }
 
@@ -355,61 +229,45 @@ if (logoutBtn) {
     if (!supabase) return;
     await supabase.auth.signOut();
     await refreshAuthUI();
-    await loadComments();
   });
 }
 
 if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
-    if (!supabase) return;
-    safeText(authStatus, "Вхожу...");
-    const email = $("email")?.value?.trim() || "";
-    const password = $("password")?.value?.trim() || "";
-
+    const email = $("email").value;
+    const password = $("password").value;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    safeText(authStatus, error ? ("Ошибка: " + error.message) : "Успешно!");
+    safeText(authStatus, error ? error.message : "Вход выполнен");
     await refreshAuthUI();
-    await loadComments();
   });
 }
 
 if (signupBtn) {
   signupBtn.addEventListener("click", async () => {
-    if (!supabase) return;
-    safeText(authStatus, "Регистрирую...");
-    const email = $("email")?.value?.trim() || "";
-    const password = $("password")?.value?.trim() || "";
-
+    const email = $("email").value;
+    const password = $("password").value;
     const { error } = await supabase.auth.signUp({ email, password });
-    safeText(authStatus, error ? ("Ошибка: " + error.message) : "Аккаунт создан. Теперь войди.");
+    safeText(authStatus, error ? error.message : "Аккаунт создан");
   });
 }
 
 if (sendComment) {
   sendComment.addEventListener("click", async () => {
-    if (!supabase) return;
-    if (!currentUser) return;
+    if (!supabase || !currentUser) return;
+    const text = commentBody.value.trim();
+    if (!text) return;
 
-    const chId = getCurrentChapterId();
-    const body = commentBody?.value?.trim() || "";
-    const username = ($("username")?.value?.trim() || "") || "User";
-
-    if (!chId) return;
-    if (!body) return;
-
-    safeText(commentStatus, "Отправляю...");
-
-    const { error } = await supabase.from("comments").insert({
+    const chId = manifest.chapters[chapterIndex].id;
+    await supabase.from("comments").insert({
       user_id: currentUser.id,
-      username,
+      username: $("username").value || "User",
       chapter_id: chId,
       page_index: i,
-      body
+      body: text
     });
 
-    safeText(commentStatus, error ? ("Ошибка: " + error.message) : "Отправлено!");
-    if (!error && commentBody) commentBody.value = "";
-    await loadComments();
+    commentBody.value = "";
+    loadComments();
   });
 }
 
@@ -417,44 +275,20 @@ if (sendComment) {
 // Boot
 // ==============================
 async function boot() {
-  try {
-    const res = await fetch("manifest.json", { cache: "no-store" });
-    manifest = await res.json();
-  } catch (e) {
-    console.error("Failed to load manifest.json", e);
-    manifest = { title: "Manga", chapters: [] };
-  }
+  const res = await fetch("manifest.json", { cache: "no-store" });
+  manifest = await res.json();
 
-  // обновляем auth UI всегда
   await refreshAuthUI();
 
   const chapters = manifest.chapters || [];
   if (!chapters.length) {
-    pages = [];
-    renderEmpty("Нет глав. Проверь manifest.json.");
+    renderEmpty("Глав нет");
     return;
   }
 
-  // выбираем главу из URL или первую
   const chapterId = qp("chapter") || chapters[0].id;
   const idx = chapters.findIndex(c => c.id === chapterId);
-  chapterIndex = (idx >= 0) ? idx : 0;
-
-  const ch = chapters[chapterIndex];
-
-  // стартовая страница: ?page= -> сохранённый прогресс -> 0
-  const pageFromUrl = parseInt(qp("page") || "", 10);
-  if (Number.isFinite(pageFromUrl) && pageFromUrl >= 0) {
-    goToChapter(chapterIndex, pageFromUrl);
-    return;
-  }
-
-  const saved = parseInt(localStorage.getItem(keyForProgress(ch.id)) || "0", 10);
-  const startAt = (!Number.isNaN(saved) ? saved : 0);
-  goToChapter(chapterIndex, startAt);
+  goToChapter(idx >= 0 ? idx : 0, 0);
 }
-
-boot();
-
 
 boot();
