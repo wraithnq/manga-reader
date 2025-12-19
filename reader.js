@@ -1,3 +1,151 @@
+// === Supabase настройки (ВСТАВЬ СВОИ) ===
+const SUPABASE_URL = "https://irkgidjwtdiowhwmzmbc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2dpZGp3dGRpb3dod216bWJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMzMwMjIsImV4cCI6MjA4MTcwOTAyMn0.jk-RH-KybnAhAUlMgSfdHU6AQYZ37FV9aufPJEvDPrI";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// UI элементы
+const authBtn = document.getElementById("authBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const authBox = document.getElementById("authBox");
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const authStatus = document.getElementById("authStatus");
+const commentForm = document.getElementById("commentForm");
+const sendComment = document.getElementById("sendComment");
+const commentBody = document.getElementById("commentBody");
+const commentStatus = document.getElementById("commentStatus");
+const commentsList = document.getElementById("commentsList");
+
+let currentUser = null;
+
+// получаем текущий chapter_id
+function getCurrentChapterId() {
+  return (manifest?.chapters?.[chapterIndex]?.id) || null;
+}
+
+async function refreshAuthUI() {
+  const { data } = await supabase.auth.getUser();
+  currentUser = data?.user || null;
+
+  if (currentUser) {
+    authBtn.style.display = "none";
+    logoutBtn.style.display = "inline-block";
+    authBox.style.display = "none";
+    commentForm.style.display = "block";
+    authStatus.textContent = "";
+  } else {
+    authBtn.style.display = "inline-block";
+    logoutBtn.style.display = "none";
+    commentForm.style.display = "none";
+  }
+}
+
+authBtn.addEventListener("click", () => {
+  authBox.style.display = (authBox.style.display === "none") ? "block" : "none";
+});
+
+logoutBtn.addEventListener("click", async () => {
+  await supabase.auth.signOut();
+  await refreshAuthUI();
+});
+
+loginBtn.addEventListener("click", async () => {
+  authStatus.textContent = "Вхожу...";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  authStatus.textContent = error ? ("Ошибка: " + error.message) : "Успешно!";
+  await refreshAuthUI();
+  await loadComments();
+});
+
+signupBtn.addEventListener("click", async () => {
+  authStatus.textContent = "Регистрирую...";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const { error } = await supabase.auth.signUp({ email, password });
+  authStatus.textContent = error ? ("Ошибка: " + error.message) : "Аккаунт создан. Теперь войди.";
+});
+
+async function loadComments() {
+  const chId = getCurrentChapterId();
+  if (!chId) return;
+
+  commentsList.textContent = "Загрузка...";
+  const { data, error } = await supabase
+    .from("comments")
+    .select("id, created_at, username, body, user_id")
+    .eq("chapter_id", chId)
+    .eq("page_index", i)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    commentsList.textContent = "Ошибка загрузки: " + error.message;
+    return;
+  }
+
+  if (!data || !data.length) {
+    commentsList.textContent = "Комментариев пока нет.";
+    return;
+  }
+
+  commentsList.innerHTML = data.map(c => {
+    const dt = new Date(c.created_at).toLocaleString();
+    const canDelete = currentUser && currentUser.id === c.user_id;
+    return `
+      <div style="padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;margin:8px 0;">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+          <b>${escapeHtml(c.username)}</b>
+          <span class="small">${dt}</span>
+        </div>
+        <div style="margin-top:6px;white-space:pre-wrap;">${escapeHtml(c.body)}</div>
+        ${canDelete ? `<button class="btn" data-del="${c.id}" style="margin-top:8px;">Удалить</button>` : ""}
+      </div>
+    `;
+  }).join("");
+
+  // обработчик удаления
+  document.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-del");
+      await supabase.from("comments").delete().eq("id", id);
+      await loadComments();
+    });
+  });
+}
+
+sendComment.addEventListener("click", async () => {
+  if (!currentUser) return;
+
+  const chId = getCurrentChapterId();
+  const body = commentBody.value.trim();
+  const username = document.getElementById("username").value.trim() || "User";
+
+  if (!body) return;
+  commentStatus.textContent = "Отправляю...";
+
+  const { error } = await supabase.from("comments").insert({
+    user_id: currentUser.id,
+    username,
+    chapter_id: chId,
+    page_index: i,
+    body
+  });
+
+  commentStatus.textContent = error ? ("Ошибка: " + error.message) : "Отправлено!";
+  if (!error) commentBody.value = "";
+  await loadComments();
+});
+
+// маленькая защита от XSS
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[c]));
+}
+
 let manifest;
 let chapterIndex = 0;
 let pages = [];
