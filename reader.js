@@ -196,6 +196,9 @@ function render() {
   const chId = manifest.chapters[chapterIndex].id;
   localStorage.setItem(keyForProgress(chId), String(i));
   saveLastRead(chId, i);
+  
+  loadComments(); // ✅ обновляем комментарии под текущую страницу
+
 }
 
 function goToChapter(idx, startAt = 0) {
@@ -276,6 +279,7 @@ async function boot() {
   if (!chapters.length) {
     pages = [];
     render();
+    await refreshAuthUI();
     return;
   }
 
