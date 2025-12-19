@@ -14,7 +14,7 @@ function setHtml(id, html) {
 }
 
 async function bootHome() {
-  const res = await fetch("manifest.json", { cache: "no-store" });
+  const res = await fetch("manifest.json?v=5", { cache: "no-store" });
   const manifest = await res.json();
 
   // Заголовки
