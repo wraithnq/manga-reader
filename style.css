@@ -152,5 +152,23 @@ code{ background:rgba(255,255,255,.07); padding:2px 6px; border-radius:8px; }
 .chMeta{
   opacity: .75;
   font-size: 12px;
+
+}
+
+@media (max-width: 900px){
+  .side{
+    position: static !important;
+    top: auto !important;
+  }
+
+  .layout{
+    grid-template-columns: 1fr;
+  }
+
+  header{
+    position: static;
+  }
+}
+
 }
 
