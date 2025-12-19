@@ -17,6 +17,42 @@
   </header>
 
   <main>
+    <div class="wrap">
+  <div class="card">
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+      <b>Комментарии к странице</b>
+      <div>
+        <button class="btn" id="authBtn">Войти</button>
+        <button class="btn" id="logoutBtn" style="display:none;">Выйти</button>
+      </div>
+    </div>
+
+    <div id="authBox" style="display:none; margin-top:12px;">
+      <div style="display:grid; gap:10px; max-width:420px;">
+        <input id="email" placeholder="Email" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#12121b;color:#fff;">
+        <input id="password" type="password" placeholder="Пароль" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#12121b;color:#fff;">
+        <input id="username" placeholder="Ник (для комментов)" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#12121b;color:#fff;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="loginBtn">Войти</button>
+          <button class="btn" id="signupBtn">Регистрация</button>
+        </div>
+        <div class="small" id="authStatus"></div>
+      </div>
+    </div>
+
+    <div id="commentForm" style="display:none; margin-top:12px;">
+      <textarea id="commentBody" placeholder="Напиши комментарий (до 500 символов)..."
+        style="width:100%;min-height:90px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#12121b;color:#fff;"></textarea>
+      <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
+        <button class="btn" id="sendComment">Отправить</button>
+        <span class="small" id="commentStatus"></span>
+      </div>
+    </div>
+
+    <hr />
+    <div id="commentsList" class="small">Загрузка…</div>
+  </div>
+</div>
     <img id="page" alt="manga page" />
   </main>
 
