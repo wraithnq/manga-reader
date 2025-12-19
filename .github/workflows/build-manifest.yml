@@ -1,0 +1,88 @@
+name: Build manifest.json
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate manifest.json from manga folder + chapters.json
+        run: |
+          python3 - << 'PY'
+          import os, json, re
+
+          ROOT = "manga"
+          CHAPTERS_JSON = "chapters.json"
+          DEFAULT_TITLE = "Manga"
+          DEFAULT_COVER = "cover.jpg"
+          exts = (".jpg",".jpeg",".png",".webp",".JPG",".JPEG",".PNG",".WEBP")
+
+          def sortkey(s):
+            return [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', s)]
+
+          meta = {}
+          if os.path.exists(CHAPTERS_JSON):
+            with open(CHAPTERS_JSON, "r", encoding="utf-8") as f:
+              meta = json.load(f)
+
+          title = meta.get("title", DEFAULT_TITLE)
+          cover = meta.get("cover", DEFAULT_COVER)
+          wanted = meta.get("chapters", [])
+
+          scanned = {}
+          if os.path.isdir(ROOT):
+            for ch in os.listdir(ROOT):
+              ch_path = os.path.join(ROOT, ch)
+              if not os.path.isdir(ch_path):
+                continue
+              pages = [f for f in os.listdir(ch_path) if f.endswith(exts)]
+              pages.sort(key=sortkey)
+              scanned[ch] = [f"{ROOT}/{ch}/{p}" for p in pages]
+
+          chapters = []
+
+          for item in wanted:
+            ch_id = item.get("id")
+            if not ch_id:
+              continue
+            pages = scanned.get(ch_id, [])
+            chapters.append({
+              "id": ch_id,
+              "name": item.get("name", ch_id),
+              "pages": pages
+            })
+            if ch_id in scanned:
+              del scanned[ch_id]
+
+          for ch_id in sorted(scanned.keys(), key=sortkey):
+            chapters.append({
+              "id": ch_id,
+              "name": ch_id,
+              "pages": scanned[ch_id]
+            })
+
+          manifest = {
+            "title": title,
+            "cover": cover if os.path.exists(cover) else None,
+            "chapters": chapters
+          }
+
+          with open("manifest.json","w",encoding="utf-8") as fp:
+            json.dump(manifest, fp, ensure_ascii=False, indent=2)
+
+          print("Chapters:", len(chapters))
+          print("Total pages:", sum(len(c["pages"]) for c in chapters))
+          PY
+
+      - name: Commit manifest.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "Auto-update manifest.json" || echo "No changes"
+          git push
