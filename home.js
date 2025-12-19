@@ -1,52 +1,91 @@
-function getLastRead() {
-  try {
-    return JSON.parse(localStorage.getItem("manga_last_read") || "null");
-  } catch {
-    return null;
-  }
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#039;"
+  }[c]));
 }
 
-async function boot() {
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function setHtml(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+async function bootHome() {
   const res = await fetch("manifest.json", { cache: "no-store" });
-  const data = await res.json();
+  const manifest = await res.json();
 
-  const title = data.title || "Manga";
-  document.title = title;
-  document.getElementById("mangaTitle").textContent = title;
-  document.getElementById("titleH1").textContent = title;
+  // Заголовки
+  const title = manifest.title || "Manga";
+  setText("mangaTitle", title);
+  setText("titleH1", title);
+  setText("titleH1_top", title);
 
-  if (data.cover) document.getElementById("cover").src = data.cover;
+  const desc = "Выбери главу справа или нажми «Читать».";
+  setText("desc", desc);
+  setText("desc_top", desc);
 
-  const chapters = data.chapters || [];
+  // Обложка
+  const coverEl = document.getElementById("cover");
+  if (coverEl) coverEl.src = manifest.cover || "cover.jpg";
 
-  // --- Continue reading ---
-  const last = getLastRead();
+  // Кнопки “читать”
+  const firstId = manifest.chapters?.[0]?.id;
+  const readHref = firstId ? `reader.html?chapter=${encodeURIComponent(firstId)}` : "reader.html";
+
+  const topBtn = document.getElementById("readTopBtn");
+  if (topBtn) topBtn.href = readHref;
+
+  const readBtn = document.getElementById("readBtn");
+  if (readBtn) readBtn.href = readHref;
+
+  // Продолжить чтение (если есть)
   const continueCard = document.getElementById("continueCard");
   const continueText = document.getElementById("continueText");
   const continueBtn = document.getElementById("continueBtn");
 
-  if (last && chapters.some(c => c.id === last.chapterId)) {
-    const ch = chapters.find(c => c.id === last.chapterId);
-    const pageNum = (Number.isFinite(last.pageIndex) ? last.pageIndex : 0) + 1;
-    continueText.textContent = `${ch.name || ch.id} — страница ${pageNum}`;
-    continueBtn.href = `reader.html?chapter=${encodeURIComponent(ch.id)}&page=${encodeURIComponent(String(last.pageIndex || 0))}`;
-    continueCard.style.display = "block";
-  }
+  try {
+    const last = JSON.parse(localStorage.getItem("manga_last_read") || "null");
+    if (last && last.chapterId) {
+      const ch = (manifest.chapters || []).find(x => x.id === last.chapterId);
+      if (ch && continueCard && continueText && continueBtn) {
+        continueCard.style.display = "block";
+        const pageNum = Number.isFinite(last.pageIndex) ? (last.pageIndex + 1) : 1;
+        continueText.textContent = `${ch.name || ch.id} — стр. ${pageNum}`;
+        continueBtn.href = `reader.html?chapter=${encodeURIComponent(ch.id)}&page=${encodeURIComponent(last.pageIndex || 0)}`;
+      }
+    }
+  } catch (_) {}
 
-  // --- Chapters list ---
-  const chaptersWrap = document.getElementById("chapters");
+  // Список глав (новый дизайн)
+  const chapters = manifest.chapters || [];
   const emptyCh = document.getElementById("emptyCh");
 
   if (!chapters.length) {
-    emptyCh.style.display = "block";
+    if (emptyCh) emptyCh.style.display = "block";
+    setHtml("chapters", "");
     return;
+  } else {
+    if (emptyCh) emptyCh.style.display = "none";
   }
 
-  chaptersWrap.innerHTML = chapters.map((c, idx) => {
-    const label = c.name || `Глава ${idx + 1}`;
-    const url = `reader.html?chapter=${encodeURIComponent(c.id)}`;
-    return `<a class="chapterBtn" href="${url}">${label}</a>`;
-  }).join("");
+  // Рендерим в #chapters, но используем классы нового дизайна
+  // В index.html у тебя контейнер: <div id="chapters" class="chaptersNew"></div>
+  setHtml("chapters", chapters.map((ch) => {
+    const name = escapeHtml(ch.name || ch.id);
+    const count = (ch.pages && ch.pages.length) ? ch.pages.length : 0;
+    return `
+      <a href="reader.html?chapter=${encodeURIComponent(ch.id)}">
+        <div class="chLeft">
+          <div class="chName">${name}</div>
+          <div class="chMeta">${count} стр.</div>
+        </div>
+        <div class="chMeta">→</div>
+      </a>
+    `;
+  }).join(""));
 }
 
-boot();
+bootHome();
