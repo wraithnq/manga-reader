@@ -9,31 +9,67 @@
 <body>
   <header>
     <span class="pill"><b id="mangaTitle">Manga</b></span>
-    <a class="pill" href="reader.html" style="text-decoration:none;color:#fff;">Читать →</a>
+    <a class="pill" id="readTopBtn" href="reader.html" style="text-decoration:none;color:#fff;">Читать →</a>
   </header>
 
-  <div class="wrap">
-    <div class="card hero">
-      <img id="cover" class="cover" src="cover.jpg" alt="cover" />
-      <div>
-        <h1 id="titleH1" style="margin:0 0 8px 0;">Manga</h1>
-        <p class="small" id="desc">Выбери главу ниже или нажми «Читать».</p>
+  <main class="layout">
+    <!-- LEFT SIDEBAR -->
+    <aside class="side">
+      <div class="sideCard">
+        <img id="cover" class="coverSquare" src="cover.jpg" alt="cover" />
+        <div class="sideTitle" id="titleH1">Manga</div>
+        <div class="small" id="desc">Выбери главу справа или нажми «Читать».</div>
+
+        <a class="chapterBtn primaryBtn" id="readBtn" href="reader.html">Начать читать →</a>
       </div>
-    </div>
+    </aside>
 
-    <div class="card" id="continueCard" style="display:none;">
-      <b>Продолжить чтение</b>
-      <p class="small" id="continueText"></p>
-      <a class="chapterBtn" id="continueBtn" href="#">Продолжить →</a>
-    </div>
+    <!-- RIGHT CONTENT -->
+    <section class="content">
+      <div class="card heroWide">
+        <div>
+          <h1 id="titleH1_top" style="margin:0 0 8px 0;">Manga</h1>
+          <p class="small" id="desc_top">Выбери главу ниже или нажми «Читать».</p>
+        </div>
+      </div>
 
-    <div class="card">
-      <b>Главы</b>
-      <div id="chapters" class="chapters"></div>
-      <p class="small" id="emptyCh" style="display:none;">Пока нет глав. Добавь папки в <code>manga/</code> и запушь.</p>
-    </div>
-  </div>
+      <div class="card" id="continueCard" style="display:none;">
+        <b>Продолжить чтение</b>
+        <p class="small" id="continueText"></p>
+        <a class="chapterBtn" id="continueBtn" href="#">Продолжить →</a>
+      </div>
+
+      <div class="card">
+        <div class="rowBetween">
+          <b>Главы</b>
+        </div>
+
+        <div id="chapters" class="chaptersNew"></div>
+
+        <p class="small" id="emptyCh" style="display:none;">
+          Пока нет глав. Добавь папки в <code>manga/</code> и запушь.
+        </p>
+      </div>
+    </section>
+  </main>
 
   <script src="home.js"></script>
+
+  <!-- синхронизируем заголовки (если home.js меняет titleH1/desc только один раз) -->
+  <script>
+    // Если home.js обновляет #titleH1 и #desc, то здесь продублируем в верхний блок
+    const sync = () => {
+      const t = document.getElementById("titleH1")?.textContent || "Manga";
+      const d = document.getElementById("desc")?.textContent || "";
+      const topT = document.getElementById("titleH1_top");
+      const topD = document.getElementById("desc_top");
+      if (topT) topT.textContent = t;
+      if (topD) topD.textContent = d;
+    };
+    // подождём, пока home.js подгрузит manifest
+    setTimeout(sync, 50);
+    setTimeout(sync, 250);
+    setTimeout(sync, 700);
+  </script>
 </body>
 </html>
