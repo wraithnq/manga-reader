@@ -35,3 +35,120 @@ code{ background:rgba(255,255,255,.07); padding:2px 6px; border-radius:8px; }
   color:#fff;
   text-decoration:none;
 }
+.chapterBtn:hover{ background:#34344a; }
+
+/* ==============================
+   New home layout (like manga sites)
+   ============================== */
+.layout{
+  display:grid;
+  grid-template-columns: 340px 1fr;
+  gap: 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+@media (max-width: 900px){
+  .layout{ grid-template-columns: 1fr; padding: 16px; }
+  .side{ position: static; }
+}
+
+.side{
+  position: sticky;
+  top: 16px;
+  align-self: start;
+}
+
+.sideCard{
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  padding: 16px;
+  display:flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.coverSquare{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.02);
+  box-shadow: 0 10px 28px rgba(0,0,0,.35);
+}
+
+.sideTitle{
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.primaryBtn{
+  width: 100%;
+  text-align:center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.10);
+  text-decoration:none;
+  color:#fff;
+}
+
+.primaryBtn:hover{
+  background: rgba(255,255,255,.14);
+}
+
+.heroWide{
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.rowBetween{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 12px;
+}
+
+.chaptersNew{
+  display:grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.chaptersNew a{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+  text-decoration:none;
+  color: inherit;
+}
+
+.chaptersNew a:hover{
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.12);
+}
+
+.chLeft{
+  display:flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chName{
+  font-weight: 800;
+}
+
+.chMeta{
+  opacity: .75;
+  font-size: 12px;
+}
+
