@@ -17,6 +17,17 @@ async function bootHome() {
   const res = await fetch("manifest.json?v=5", { cache: "no-store" });
   const manifest = await res.json();
 
+  // Заголовок
+document.getElementById("mangaTitle").textContent = manifest.title;
+document.getElementById("titleH1").textContent = manifest.title;
+
+// Описание (ВОТ ЭТО ВАЖНО)
+const descEl = document.getElementById("desc");
+if (manifest.description && descEl) {
+  descEl.textContent = manifest.description;
+}
+
+
   // Заголовки
   const title = manifest.title || "Manga";
   setText("mangaTitle", title);
