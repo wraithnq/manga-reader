@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Manga</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <span class="pill"><b id="mangaTitle">Manga</b></span>
+    <a class="pill" href="reader.html" style="text-decoration:none;color:#fff;">Читать →</a>
+  </header>
+
+  <div class="wrap">
+    <div class="card hero">
+      <img id="cover" class="cover" src="cover.jpg" alt="cover" />
+      <div>
+        <h1 id="titleH1" style="margin:0 0 8px 0;">Manga</h1>
+        <p class="small" id="desc">Выбери главу ниже или нажми «Читать».</p>
+      </div>
+    </div>
+
+    <div class="card" id="continueCard" style="display:none;">
+      <b>Продолжить чтение</b>
+      <p class="small" id="continueText"></p>
+      <a class="chapterBtn" id="continueBtn" href="#">Продолжить →</a>
+    </div>
+
+    <div class="card">
+      <b>Главы</b>
+      <div id="chapters" class="chapters"></div>
+      <p class="small" id="emptyCh" style="display:none;">Пока нет глав. Добавь папки в <code>manga/</code> и запушь.</p>
+    </div>
+  </div>
+
+  <script src="home.js"></script>
+</body>
+</html>

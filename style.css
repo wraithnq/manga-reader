@@ -1,0 +1,37 @@
+:root { color-scheme: dark; }
+body { margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#0b0b0f; color:#fff; }
+
+header{
+  position:sticky; top:0; z-index:10;
+  background:rgba(15,15,25,.88); backdrop-filter: blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:10px 12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+}
+
+.btn{ background:#2a2a3a; border:1px solid rgba(255,255,255,.12); color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer; }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+.pill{ padding:8px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10); }
+
+.small{ opacity:.75; font-size:13px; }
+
+main{ display:flex; justify-content:center; padding:12px; }
+img{ max-width:980px; width:100%; height:auto; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.55); }
+
+.wrap{ max-width: 980px; margin: 12px auto; padding: 0 12px; }
+.card{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); border-radius:14px; padding:14px; margin-bottom:12px; }
+code{ background:rgba(255,255,255,.07); padding:2px 6px; border-radius:8px; }
+
+.hero{ display:flex; gap:14px; align-items:center; }
+.cover{ width:140px; height:auto; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.5); }
+
+.chapters{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+.chapterBtn{
+  display:inline-block;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#2a2a3a;
+  border:1px solid rgba(255,255,255,.12);
+  color:#fff;
+  text-decoration:none;
+}

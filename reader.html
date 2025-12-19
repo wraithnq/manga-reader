@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reader</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <a class="pill" href="index.html" style="text-decoration:none;color:#fff;">← Главы</a>
+    <button class="btn" id="prev">◀</button>
+    <button class="btn" id="next">▶</button>
+    <span class="pill" id="chapterName">—</span>
+    <span class="pill" id="counter">0 / 0</span>
+    <span class="pill small">← →, пробел, свайп</span>
+  </header>
+
+  <main>
+    <img id="page" alt="manga page" />
+  </main>
+
+  <div class="card" id="empty" style="display:none;">
+    <b>Нет страниц</b>
+    <p class="small">Проверь папку главы в <code>manga/</code>.</p>
+  </div>
+
+  <script src="reader.js"></script>
+</body>
+</html>
