@@ -1,24 +1,18 @@
 const SUPABASE_URL = "https://irkgidjwtdiowhwmzmbc.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2dpZGp3dGRpb3dod216bWJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMzMwMjIsImV4cCI6MjA4MTcwOTAyMn0.jk-RH-KybnAhAUlMgSfdHU6AQYZ37FV9aufPJEvDPrI";
 
-let supabase = null;
+let sb = null;
 try {
   if (window.supabase && typeof window.supabase.createClient === "function") {
-    supabase = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } else {
     console.warn("Supabase SDK not loaded");
   }
 } catch (e) {
   console.warn("Supabase init failed", e);
-  supabase = null;
+  sb = null;
 }
 
-// ==============================
-// DOM helpers
-// ==============================
 const $ = (id) => document.getElementById(id);
 
 const img = $("page");
@@ -40,56 +34,32 @@ const commentBody = $("commentBody");
 const commentStatus = $("commentStatus");
 const commentsList = $("commentsList");
 
-// ==============================
-// Utils
-// ==============================
-function safeShow(el, show) {
-  if (!el) return;
-  el.style.display = show ? "block" : "none";
-}
-function safeText(el, text) {
-  if (!el) return;
-  el.textContent = text;
-}
-function safeHtml(el, html) {
-  if (!el) return;
-  el.innerHTML = html;
-}
+function safeShow(el, show) { if (el) el.style.display = show ? "block" : "none"; }
+function safeText(el, text) { if (el) el.textContent = text; }
+function safeHtml(el, html) { if (el) el.innerHTML = html; }
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "\"": "&quot;",
-    "'": "&#039;",
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"
   }[c]));
 }
-function qp(name) {
-  return new URLSearchParams(location.search).get(name);
-}
-function keyForProgress(chId) {
-  return `manga_progress_${chId}`;
-}
 
-// ==============================
-// State
-// ==============================
+function qp(name) { return new URLSearchParams(location.search).get(name); }
+function keyForProgress(chId) { return `manga_progress_${chId}`; }
+
 let manifest = null;
 let chapterIndex = 0;
 let pages = [];
 let i = 0;
 let currentUser = null;
 
-// ==============================
-// Rendering
-// ==============================
 function renderEmpty(msg) {
   if (img) img.style.display = "none";
   safeShow(empty, true);
   safeText(counter, "0 / 0");
   if (prevBtn) prevBtn.disabled = true;
   if (nextBtn) nextBtn.disabled = true;
-  if (commentsList) safeText(commentsList, msg || "");
+  safeText(commentsList, msg || "");
 }
 
 function render() {
@@ -102,7 +72,7 @@ function render() {
   if (img) img.style.display = "block";
   safeShow(empty, false);
 
-  img.src = pages[i];
+  if (img) img.src = pages[i];
   safeText(counter, `${i + 1} / ${pages.length}`);
   if (prevBtn) prevBtn.disabled = (i === 0);
   if (nextBtn) nextBtn.disabled = false;
@@ -113,9 +83,6 @@ function render() {
   loadComments();
 }
 
-// ==============================
-// Navigation
-// ==============================
 function goToChapter(idx, startAt = 0) {
   const ch = manifest.chapters[idx];
   chapterIndex = idx;
@@ -134,35 +101,27 @@ function goToChapter(idx, startAt = 0) {
 
 function next() {
   if (!pages.length) return;
-  if (i < pages.length - 1) {
-    i++;
-    render();
-  } else if (chapterIndex < manifest.chapters.length - 1) {
-    goToChapter(chapterIndex + 1, 0);
-  }
+  if (i < pages.length - 1) { i++; render(); }
+  else if (chapterIndex < manifest.chapters.length - 1) goToChapter(chapterIndex + 1, 0);
 }
 
 function prev() {
-  if (i > 0) {
-    i--;
-    render();
-  } else if (chapterIndex > 0) {
+  if (i > 0) { i--; render(); }
+  else if (chapterIndex > 0) {
     const prevCh = manifest.chapters[chapterIndex - 1];
     goToChapter(chapterIndex - 1, Math.max(0, prevCh.pages.length - 1));
   }
 }
 
-// ==============================
-// Auth / Comments
-// ==============================
 async function refreshAuthUI() {
-  if (!supabase) {
+  if (!sb) {
     safeShow(authBox, false);
     safeShow(commentForm, false);
+    safeText(commentsList, "Комментарии недоступны (Supabase не подключён).");
     return;
   }
 
-  const { data } = await supabase.auth.getUser();
+  const { data } = await sb.auth.getUser();
   currentUser = data?.user || null;
 
   if (currentUser) {
@@ -178,7 +137,7 @@ async function refreshAuthUI() {
 }
 
 async function loadComments() {
-  if (!supabase || !commentsList || !pages.length) {
+  if (!sb || !commentsList || !pages.length) {
     if (commentsList) safeText(commentsList, "Комментариев нет.");
     return;
   }
@@ -186,14 +145,14 @@ async function loadComments() {
   const chId = manifest.chapters[chapterIndex].id;
   safeText(commentsList, "Загрузка...");
 
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from("comments")
     .select("id, created_at, username, body, user_id")
     .eq("chapter_id", chId)
     .eq("page_index", i)
-    .order("created_at");
+    .order("created_at", { ascending: true });
 
-  if (error || !data.length) {
+  if (error || !data?.length) {
     safeText(commentsList, "Комментариев пока нет.");
     return;
   }
@@ -207,9 +166,6 @@ async function loadComments() {
   `).join(""));
 }
 
-// ==============================
-// Events
-// ==============================
 if (prevBtn) prevBtn.addEventListener("click", prev);
 if (nextBtn) nextBtn.addEventListener("click", next);
 
@@ -226,17 +182,18 @@ if (authBtn && authBox) {
 
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
+    if (!sb) return;
+    await sb.auth.signOut();
     await refreshAuthUI();
   });
 }
 
 if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
+    if (!sb) return;
     const email = $("email").value;
     const password = $("password").value;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({ email, password });
     safeText(authStatus, error ? error.message : "Вход выполнен");
     await refreshAuthUI();
   });
@@ -244,21 +201,22 @@ if (loginBtn) {
 
 if (signupBtn) {
   signupBtn.addEventListener("click", async () => {
+    if (!sb) return;
     const email = $("email").value;
     const password = $("password").value;
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await sb.auth.signUp({ email, password });
     safeText(authStatus, error ? error.message : "Аккаунт создан");
   });
 }
 
 if (sendComment) {
   sendComment.addEventListener("click", async () => {
-    if (!supabase || !currentUser) return;
+    if (!sb || !currentUser) return;
     const text = commentBody.value.trim();
     if (!text) return;
 
     const chId = manifest.chapters[chapterIndex].id;
-    await supabase.from("comments").insert({
+    await sb.from("comments").insert({
       user_id: currentUser.id,
       username: $("username").value || "User",
       chapter_id: chId,
@@ -271,20 +229,14 @@ if (sendComment) {
   });
 }
 
-// ==============================
-// Boot
-// ==============================
 async function boot() {
-  const res = await fetch("manifest.json", { cache: "no-store" });
+  const res = await fetch("manifest.json?v=7", { cache: "no-store" });
   manifest = await res.json();
 
   await refreshAuthUI();
 
   const chapters = manifest.chapters || [];
-  if (!chapters.length) {
-    renderEmpty("Глав нет");
-    return;
-  }
+  if (!chapters.length) { renderEmpty("Глав нет"); return; }
 
   const chapterId = qp("chapter") || chapters[0].id;
   const idx = chapters.findIndex(c => c.id === chapterId);
