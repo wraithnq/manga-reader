@@ -1,10 +1,10 @@
 {
-  "title": "Manga",
+  "title": "Проклятие бездны",
   "cover": "cover.jpg",
   "chapters": [
     {
       "id": "ch1",
-      "name": "ch1",
+      "name": "Глава 1.Тьма и сильнейший",
       "pages": [
         "manga/ch1/001.jpg"
       ]
