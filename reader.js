@@ -1,11 +1,6 @@
-// ==============================
-// Supabase (твои ключи)
-// ==============================
 const SUPABASE_URL = "https://irkgidjwtdiowhwmzmbc.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2dpZGp3dGRpb3dod216bWJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMzMwMjIsImV4cCI6MjA4MTcwOTAyMn0.jk-RH-KybnAhAUlMgSfdHU6AQYZ37FV9aufPJEvDPrI";
+const SUPABASE_ANON_KEY = "твоя_строка_ключа_как_есть";
 
-// создаём клиент безопасно (чтобы манга работала даже без supabase sdk)
 let supabase = null;
 try {
   if (window.supabase && typeof window.supabase.createClient === "function") {
@@ -17,6 +12,7 @@ try {
   console.warn("Supabase init failed. Comments/auth disabled.", e);
   supabase = null;
 }
+
 
 // ==============================
 // DOM helpers
