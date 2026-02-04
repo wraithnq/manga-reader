@@ -100,28 +100,33 @@ header{
   flex-direction:column;
   gap:12px;
 
-  /* 🔑 ВАЖНО */
-  pointer-events: none;
+  /* ВАЖНО: кнопки кликаются */
+  pointer-events:none;
 }
 
 .sideCard > *{
-  pointer-events: auto;
+  pointer-events:auto;
 }
 
 /* ==============================
-   Cover (НЕ ТРОГАЕМ)
+   COVER — ВЗЯТО ИЗ КОДА №2
+   (ИМЕННО ЭТО ЧИНИТ КАРТИНКИ)
 ============================== */
 
 .coverSquare{
   width:100%;
-  height:560px;
-  object-fit:cover;
-  object-position:center;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center;
   border-radius:16px;
   border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.02);
+  background:#000;
   box-shadow:0 10px 28px rgba(0,0,0,.35);
 }
+
+/* ==============================
+   Titles
+============================== */
 
 .sideTitle{
   font-size:20px;
@@ -130,7 +135,7 @@ header{
 }
 
 /* ==============================
-   Buttons (ФИКС)
+   Buttons (ИЗ КОДА №1 — РАБОТАЮТ)
 ============================== */
 
 .primaryBtn,
@@ -265,6 +270,17 @@ a{
 }
 
 /* ==============================
+   Reader image — НЕ ТРОГАЕМ
+============================== */
+
+main img{
+  display:block;
+  max-width:100%;
+  height:auto;
+  margin:0 auto;
+}
+
+/* ==============================
    Mobile
 ============================== */
 
@@ -281,9 +297,4 @@ a{
   header{
     position:static;
   }
-
-  .coverSquare{
-    height:420px;
-  }
 }
-
