@@ -32,6 +32,8 @@ jobs:
 
           title = meta.get("title", DEFAULT_TITLE)
           cover = meta.get("cover", DEFAULT_COVER)
+          description = meta.get("description")
+          about = meta.get("about")
           wanted = meta.get("chapters", [])
 
           scanned = {}
