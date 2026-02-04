@@ -70,6 +70,8 @@ jobs:
 
           manifest = {
             "title": title,
+            "description": description,
+            "about": about,
             "cover": cover if os.path.exists(cover) else None,
             "chapters": chapters
           }
