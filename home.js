@@ -61,7 +61,6 @@ function renderDescription(manifest){
   if (descSide) descSide.innerHTML = html;
   if (descTop) descTop.innerHTML = html;
   if (aboutText) aboutText.innerHTML = html;
-}
 
 function renderCover(manifest){
   if (!coverImg) return;
