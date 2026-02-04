@@ -44,15 +44,13 @@ function renderTitle(manifest){
 }
 
 function renderDescription(manifest){
-  const shortDesc = manifest.description || "Описание отсутствует.";
-  const aboutDesc = manifest.about || shortDesc;
+  const desc = manifest.description || "Описание отсутствует.";
 
-  const shortHtml = escapeHtml(shortDesc).replace(/\n/g, "<br><br>");
-  const aboutHtml = escapeHtml(aboutDesc).replace(/\n/g, "<br><br>");
+  const html = escapeHtml(desc).replace(/\n/g, "<br><br>");
 
-  if (descSide) descSide.innerHTML = shortHtml;
-  if (descTop) descTop.innerHTML = shortHtml;
-  if (aboutText) aboutText.innerHTML = aboutHtml;
+  if (descSide) descSide.innerHTML = html;
+  if (descTop) descTop.innerHTML = html;
+  if (aboutText) aboutText.innerHTML = html;
 }
 
 
