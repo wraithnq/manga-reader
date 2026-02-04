@@ -53,13 +53,6 @@ function renderDescription(manifest){
   if (aboutText) aboutText.innerHTML = html;
 }
 
-
-  const html = escapeHtml(desc).replace(/\n/g, "<br><br>");
-
-  if (descSide) descSide.innerHTML = html;
-  if (descTop) descTop.innerHTML = html;
-  if (aboutText) aboutText.innerHTML = html;
-
 function renderCover(manifest){
   if (!coverImg) return;
 
@@ -97,6 +90,7 @@ function renderChapters(manifest){
 // ==============================
 // Continue reading (optional)
 // ==============================
+
 function renderContinue(manifest){
   const data = localStorage.getItem("manga_last_read");
   if (!data) return;
@@ -117,6 +111,7 @@ function renderContinue(manifest){
 // ==============================
 // Boot
 // ==============================
+
 async function boot(){
   let manifest;
 
