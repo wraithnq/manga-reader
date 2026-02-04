@@ -1,262 +1,266 @@
-:root{
+/* ==============================
+   GLOBAL
+   ============================== */
+:root {
   color-scheme: dark;
 }
 
-*{
+* {
   box-sizing: border-box;
 }
 
-body{
-  margin:0;
-  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  background:#0b0b0f;
-  color:#fff;
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: #0b0b0f;
+  color: #fff;
 }
 
 /* ==============================
-   Header
+   HEADER
    ============================== */
-
-header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:rgba(15,15,25,.88);
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,15,25,.88);
   backdrop-filter: blur(10px);
-  border-bottom:1px solid rgba(255,255,255,.08);
-  padding:10px 12px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-
-.pill{
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.10);
-}
-
-.small{
-  opacity:.75;
-  font-size:13px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 10px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 /* ==============================
-   Layout
+   UI ELEMENTS
    ============================== */
-
-.layout{
-  display:grid;
-  grid-template-columns: 340px 1fr;
-  gap:22px;
-  max-width:1200px;
-  margin:0 auto;
-  padding:24px;
+.btn {
+  background: #2a2a3a;
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
-.content{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+.btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.small {
+  opacity: .75;
+  font-size: 13px;
 }
 
 /* ==============================
-   Cards
+   LAYOUT (HOME)
    ============================== */
-
-.card{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:18px;
-  padding:16px;
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
-.heroWide{
-  padding:18px;
-}
-
-/* ==============================
-   Sidebar
-   ============================== */
-
-.side{
-  position:sticky;
-  top:16px;
-  align-self:start;
-}
-
-.sideCard{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.03);
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  overflow:hidden;
-}
-
-.coverSquare{
-  width:100%;
-  height:560px;
-  object-fit:cover;
-  object-position:center;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.02);
-  box-shadow:0 10px 28px rgba(0,0,0,.35);
-}
-
-.sideTitle{
-  font-size:20px;
-  font-weight:900;
-  line-height:1.2;
-}
-
-/* ==============================
-   Buttons
-   ============================== */
-
-.primaryBtn{
-  display:block;
-  width:100%;
-  text-align:center;
-  padding:12px 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.10);
-  color:#fff;
-  text-decoration:none;
-  cursor:pointer;
-}
-
-.primaryBtn:hover{
-  background:rgba(255,255,255,.14);
-}
-
-/* ==============================
-   Tabs
-   ============================== */
-
-.tabs{
-  display:flex;
-  gap:18px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  margin-bottom:14px;
-}
-
-.tab{
-  background:none;
-  border:none;
-  color:#fff;
-  opacity:.6;
-  padding:10px 2px;
-  font-size:14px;
-  cursor:pointer;
-  position:relative;
-}
-
-.tab:hover{
-  opacity:.85;
-}
-
-.tab.active{
-  opacity:1;
-  font-weight:700;
-}
-
-.tab.active::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:-1px;
-  height:2px;
-  background:#fff;
-  border-radius:2px;
-}
-
-/* ==============================
-   Tab content
-   ============================== */
-
-.tabPane{
-  display:none;
-}
-
-.tabPane.active{
-  display:block;
-}
-
-.aboutText{
-  line-height:1.6;
-  opacity:.9;
-}
-
-/* ==============================
-   Chapters list
-   ============================== */
-
-.chaptersNew{
-  display:grid;
-  gap:10px;
-}
-
-.chaptersNew a{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  padding:12px 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.02);
-  text-decoration:none;
-  color:inherit;
-}
-
-.chaptersNew a:hover{
-  background:rgba(255,255,255,.04);
-  border-color:rgba(255,255,255,.12);
-}
-
-.chLeft{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-}
-
-.chName{
-  font-weight:800;
-}
-
-.chMeta{
-  opacity:.75;
-  font-size:12px;
-}
-
-/* ==============================
-   Mobile
-   ============================== */
-
-@media (max-width:900px){
-  .layout{
-    grid-template-columns:1fr;
-    padding:16px;
-  }
-
-  .side{
-    position:static !important;
-    top:auto !important;
-  }
-
-  header{
-    position:static;
-  }
-
-  .coverSquare{
-    height:420px;
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 14px;
   }
 }
+
+/* ==============================
+   SIDE (COVER)
+   ============================== */
+.side {
+  align-self: start;
+}
+
+.sideCard {
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.coverSquare {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.02);
+  box-shadow: 0 10px 28px rgba(0,0,0,.45);
+}
+
+.sideTitle {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.primaryBtn {
+  width: 100%;
+  text-align: center;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.10);
+  text-decoration: none;
+  color: #fff;
+}
+
+.primaryBtn:hover {
+  background: rgba(255,255,255,.16);
+}
+
+/* ==============================
+   CONTENT (RIGHT)
+   ============================== */
+.card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.heroWide {
+  padding: 20px;
+}
+
+.heroWide h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+}
+
+.heroWide p {
+  margin: 0;
+  opacity: .8;
+}
+
+/* ==============================
+   CHAPTER LIST
+   ============================== */
+.chaptersNew {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.chaptersNew a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+  text-decoration: none;
+  color: inherit;
+}
+
+.chaptersNew a:hover {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.14);
+}
+
+.chLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chName {
+  font-weight: 800;
+}
+
+.chMeta {
+  opacity: .75;
+  font-size: 12px;
+}
+
+/* ==============================
+   READER
+   ============================== */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+}
+
+/* ОСНОВНОЕ ИСПРАВЛЕНИЕ */
+#page {
+  max-width: 100vw;
+  max-height: calc(100vh - 70px); /* header */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+
+/* ПК — по высоте */
+@media (min-width: 901px) {
+  #page {
+    height: calc(100vh - 70px);
+    width: auto;
+  }
+}
+
+/* Телефон — по ширине */
+@media (max-width: 900px) {
+  #page {
+    width: 100vw;
+    height: auto;
+  }
+}
+
+/* ==============================
+   COMMENTS
+   ============================== */
+#commentsList {
+  margin-top: 10px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #12121b;
+  color: #fff;
+  resize: vertical;
+}
+
+/* ==============================
+   MOBILE FIXES
+   ============================== */
+@media (max-width: 900px) {
+  header {
+    position: sticky;
+  }
+
+  .side {
+    position: static;
+  }
+}
+
