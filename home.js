@@ -43,13 +43,29 @@ function renderTitle(manifest){
   document.title = title;
 }
 
+/**
+ * КОРОТКОЕ описание
+ * manifest.description
+ * — под заголовком
+ * — под обложкой
+ */
 function renderDescription(manifest){
   const desc = manifest.description || "Описание отсутствует.";
-
   const html = escapeHtml(desc).replace(/\n/g, "<br><br>");
 
   if (descSide) descSide.innerHTML = html;
   if (descTop) descTop.innerHTML = html;
+}
+
+/**
+ * ДЛИННОЕ описание
+ * manifest.about
+ * — ТОЛЬКО вкладка «О тайтле»
+ */
+function renderAbout(manifest){
+  const about = manifest.about || manifest.description || "Описание отсутствует.";
+  const html = escapeHtml(about).replace(/\n/g, "<br><br>");
+
   if (aboutText) aboutText.innerHTML = html;
 }
 
@@ -124,7 +140,8 @@ async function boot(){
   }
 
   renderTitle(manifest);
-  renderDescription(manifest);
+  renderDescription(manifest); // короткое
+  renderAbout(manifest);       // длинное
   renderCover(manifest);
   renderChapters(manifest);
   renderContinue(manifest);
