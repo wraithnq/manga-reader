@@ -169,9 +169,22 @@ async function loadComments() {
 if (prevBtn) prevBtn.addEventListener("click", prev);
 if (nextBtn) nextBtn.addEventListener("click", next);
 
+/* 🔴 CHANGE: убрали Space */
 window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight" || e.key === " ") next();
+  if (e.key === "ArrowRight") next();
   if (e.key === "ArrowLeft") prev();
+  if (e.code === "Space") e.preventDefault();
+});
+
+/* 🔴 ADD: листание кликом по бокам */
+document.addEventListener("click", (e) => {
+  if (e.target.closest("button, a, input, textarea")) return;
+
+  const x = e.clientX;
+  const w = window.innerWidth;
+
+  if (x > w * 0.6) next();
+  else if (x < w * 0.4) prev();
 });
 
 if (authBtn && authBox) {
