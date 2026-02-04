@@ -1,205 +1,289 @@
-/* ===============================
-   BASE
-================================ */
-:root {
+:root{
   color-scheme: dark;
 }
 
-* {
+*{
   box-sizing: border-box;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #0b0b10;
-  color: #fff;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+body{
+  margin:0;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:#0b0b0f;
+  color:#fff;
 }
 
-/* ===============================
-   HEADER
-================================ */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 14px;
-  background: rgba(15, 15, 25, 0.92);
+/* ==============================
+   Header
+============================== */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(15,15,25,.88);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:10px 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
 }
 
-/* ===============================
-   BUTTONS (IMPORTANT)
-================================ */
-button,
-a {
+.pill{
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+}
+
+.small{
+  opacity:.75;
+  font-size:13px;
+}
+
+/* ==============================
+   Layout
+============================== */
+
+.layout{
+  display:grid;
+  grid-template-columns: 340px 1fr;
+  gap:22px;
+  max-width:1200px;
+  margin:0 auto;
+  padding:24px;
+}
+
+.content{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  position:relative;
+  z-index:1;
+}
+
+/* ==============================
+   Cards
+============================== */
+
+.card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  padding:16px;
+  position:relative;
+}
+
+.heroWide{
+  padding:18px;
+}
+
+/* ==============================
+   Sidebar
+============================== */
+
+.side{
+  position:sticky;
+  top:16px;
+  align-self:start;
+  z-index:1;
+}
+
+.sideCard{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  /* 🔑 ВАЖНО */
+  pointer-events: none;
+}
+
+.sideCard > *{
   pointer-events: auto;
 }
 
-.btn,
+/* ==============================
+   Cover (НЕ ТРОГАЕМ)
+============================== */
+
+.coverSquare{
+  width:100%;
+  height:560px;
+  object-fit:cover;
+  object-position:center;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.02);
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+}
+
+.sideTitle{
+  font-size:20px;
+  font-weight:900;
+  line-height:1.2;
+}
+
+/* ==============================
+   Buttons (ФИКС)
+============================== */
+
 .primaryBtn,
-.chapterBtn {
-  position: relative;
-  z-index: 5;
-  cursor: pointer;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(255,255,255,.08);
-  color: #fff;
-  padding: 10px 14px;
-  text-decoration: none;
-  transition: background .2s, border-color .2s;
+.tab,
+.chaptersNew a,
+button,
+a{
+  pointer-events:auto;
 }
 
-.btn:hover,
-.primaryBtn:hover,
-.chapterBtn:hover {
-  background: rgba(255,255,255,.14);
-  border-color: rgba(255,255,255,.25);
+.primaryBtn{
+  display:block;
+  width:100%;
+  text-align:center;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  text-decoration:none;
+  cursor:pointer;
+  position:relative;
+  z-index:10;
 }
 
-/* ===============================
-   LAYOUT
-================================ */
-.layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+.primaryBtn:hover{
+  background:rgba(255,255,255,.14);
 }
 
-/* ===============================
-   LEFT SIDE (COVER)
-================================ */
-.side {
-  position: relative;
-  z-index: 1;
+/* ==============================
+   Tabs
+============================== */
+
+.tabs{
+  display:flex;
+  gap:18px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  margin-bottom:14px;
 }
 
-.sideCard {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 18px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.tab{
+  background:none;
+  border:none;
+  color:#fff;
+  opacity:.6;
+  padding:10px 2px;
+  font-size:14px;
+  cursor:pointer;
+  position:relative;
+  z-index:10;
 }
 
-/* КАРТИНКУ НЕ ЛОМАЕМ */
-.coverSquare {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  border-radius: 16px;
-  background: #000;
-  border: 1px solid rgba(255,255,255,.1);
+.tab:hover{
+  opacity:.85;
 }
 
-/* ===============================
-   RIGHT CONTENT
-================================ */
-.content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.tab.active{
+  opacity:1;
+  font-weight:700;
 }
 
-.card {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 18px;
-  padding: 16px;
+.tab.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:2px;
+  background:#fff;
+  border-radius:2px;
 }
 
-/* ===============================
-   TABS
-================================ */
-.tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+/* ==============================
+   Tab content
+============================== */
+
+.tabPane{
+  display:none;
 }
 
-.tabs button {
-  z-index: 10;
+.tabPane.active{
+  display:block;
 }
 
-.tabs button.active {
-  background: rgba(255,255,255,.18);
-  border-color: rgba(255,255,255,.35);
+.aboutText{
+  line-height:1.6;
+  opacity:.9;
 }
 
-/* ===============================
-   CHAPTERS
-================================ */
-.chaptersNew {
-  display: grid;
-  gap: 10px;
+/* ==============================
+   Chapters list
+============================== */
+
+.chaptersNew{
+  display:grid;
+  gap:10px;
 }
 
-.chaptersNew a {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  border-radius: 14px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.1);
-  color: #fff;
-  text-decoration: none;
-  position: relative;
-  z-index: 10;
+.chaptersNew a{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.02);
+  text-decoration:none;
+  color:inherit;
+  position:relative;
+  z-index:10;
 }
 
-.chaptersNew a:hover {
-  background: rgba(255,255,255,.06);
+.chaptersNew a:hover{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.12);
 }
 
-/* ===============================
-   READER IMAGE (НЕ ТРОГАЕМ)
-================================ */
-main img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
+.chLeft{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
 }
 
-/* ===============================
-   COMMENTS
-================================ */
-.comments {
-  position: relative;
-  z-index: 5;
+.chName{
+  font-weight:800;
 }
 
-/* ===============================
-   MOBILE FIXES
-================================ */
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-    padding: 14px;
+.chMeta{
+  opacity:.75;
+  font-size:12px;
+}
+
+/* ==============================
+   Mobile
+============================== */
+
+@media (max-width:900px){
+  .layout{
+    grid-template-columns:1fr;
+    padding:16px;
   }
 
-  header {
-    position: static;
+  .side{
+    position:static !important;
   }
 
-  .side {
-    position: static;
+  header{
+    position:static;
+  }
+
+  .coverSquare{
+    height:420px;
   }
 }
-
 
