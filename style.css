@@ -1,6 +1,7 @@
 /* ==============================
    GLOBAL
    ============================== */
+
 :root {
   color-scheme: dark;
 }
@@ -9,89 +10,97 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  padding: 0;
   background: #0b0b0f;
   color: #fff;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
 /* ==============================
    HEADER
    ============================== */
+
 header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(15,15,25,.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  padding: 10px 12px;
+  z-index: 50;
   display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
+  padding: 10px 12px;
+  background: rgba(15, 15, 25, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
-/* ==============================
-   UI ELEMENTS
-   ============================== */
 .btn {
   background: #2a2a3a;
   border: 1px solid rgba(255,255,255,.12);
   color: #fff;
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .btn:disabled {
-  opacity: .45;
+  opacity: .4;
   cursor: not-allowed;
 }
 
 .pill {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 999px;
   background: rgba(255,255,255,.06);
   border: 1px solid rgba(255,255,255,.10);
 }
 
 .small {
-  opacity: .75;
   font-size: 13px;
+  opacity: .75;
 }
 
 /* ==============================
-   LAYOUT (HOME)
+   HOME PAGE
    ============================== */
-.layout {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 22px;
+
+.wrap {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px 14px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
 }
 
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
-    padding: 14px;
   }
 }
 
-/* ==============================
-   SIDE (COVER)
-   ============================== */
+/* Left side */
+
 .side {
-  align-self: start;
+  position: sticky;
+  top: 16px;
+}
+
+@media (max-width: 900px) {
+  .side {
+    position: static;
+  }
 }
 
 .sideCard {
-  border-radius: 18px;
+  background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.03);
+  border-radius: 18px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -103,24 +112,22 @@ header {
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.02);
-  box-shadow: 0 10px 28px rgba(0,0,0,.45);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 28px rgba(0,0,0,.35);
 }
 
 .sideTitle {
   font-size: 20px;
   font-weight: 900;
-  line-height: 1.2;
 }
 
 .primaryBtn {
-  width: 100%;
+  display: block;
   text-align: center;
-  padding: 14px;
+  padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.14);
   background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.14);
   text-decoration: none;
   color: #fff;
 }
@@ -129,47 +136,27 @@ header {
   background: rgba(255,255,255,.16);
 }
 
-/* ==============================
-   CONTENT (RIGHT)
-   ============================== */
-.card {
-  background: rgba(255,255,255,.05);
+/* Right side */
+
+.heroWide {
+  background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.10);
   border-radius: 18px;
   padding: 18px;
-  margin-bottom: 14px;
 }
 
-.heroWide {
-  padding: 20px;
-}
-
-.heroWide h1 {
-  margin: 0 0 8px 0;
-  font-size: 28px;
-}
-
-.heroWide p {
-  margin: 0;
-  opacity: .8;
-}
-
-/* ==============================
-   CHAPTER LIST
-   ============================== */
 .chaptersNew {
   display: grid;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .chaptersNew a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
   border: 1px solid rgba(255,255,255,.08);
   background: rgba(255,255,255,.02);
   text-decoration: none;
@@ -184,7 +171,7 @@ header {
 .chLeft {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .chName {
@@ -192,75 +179,85 @@ header {
 }
 
 .chMeta {
-  opacity: .75;
   font-size: 12px;
+  opacity: .7;
 }
 
 /* ==============================
-   READER
+   READER (IMPORTANT FIX)
    ============================== */
+
 main {
+  position: relative;
+  width: 100vw;
+  min-height: calc(100vh - 60px);
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 0;
+  background: #000;
+  overflow: hidden;
 }
 
-/* ОСНОВНОЕ ИСПРАВЛЕНИЕ */
+/* Страница манги */
 #page {
-  max-width: 100vw;
-  max-height: calc(100vh - 70px); /* header */
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: calc(100vh - 60px);
   width: auto;
   height: auto;
   object-fit: contain;
-  display: block;
   background: #000;
 }
 
-/* ПК — по высоте */
+/* ПК — вписываем по высоте */
 @media (min-width: 901px) {
   #page {
-    height: calc(100vh - 70px);
-    width: auto;
+    height: calc(100vh - 60px);
+    max-width: none;
   }
 }
 
 /* Телефон — по ширине */
 @media (max-width: 900px) {
+  main {
+    align-items: flex-start;
+  }
+
   #page {
     width: 100vw;
     height: auto;
+    max-height: none;
   }
 }
 
 /* ==============================
    COMMENTS
    ============================== */
-#commentsList {
-  margin-top: 10px;
+
+.card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+  padding: 14px;
+  margin: 14px;
 }
 
-textarea {
-  width: 100%;
-  min-height: 90px;
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.12);
+textarea, input {
   background: #12121b;
+  border: 1px solid rgba(255,255,255,.12);
   color: #fff;
-  resize: vertical;
+  border-radius: 10px;
+  padding: 10px;
 }
 
 /* ==============================
-   MOBILE FIXES
+   MISC
    ============================== */
-@media (max-width: 900px) {
-  header {
-    position: sticky;
-  }
 
-  .side {
-    position: static;
-  }
+code {
+  background: rgba(255,255,255,.08);
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
