@@ -64,7 +64,7 @@ function renderDescription(manifest){
  */
 function renderAbout(manifest){
   const about = manifest.about || manifest.description || "Описание отсутствует.";
-  const html = escapeHtml(desc).replace(/\n+/g, "<br>");
+  const html = escapeHtml(about).replace(/\n+/g, "<br>");
 
   if (aboutText) aboutText.innerHTML = html;
 }
