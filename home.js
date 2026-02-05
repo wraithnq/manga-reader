@@ -51,7 +51,7 @@ function renderTitle(manifest){
  */
 function renderDescription(manifest){
   const desc = manifest.description || "Описание отсутствует.";
-  const html = escapeHtml(desc).replace(/\n/g, "<br><br>");
+  const html = escapeHtml(desc).replace(/\n+/g, "<br>");
 
   if (descSide) descSide.innerHTML = html;
   if (descTop) descTop.innerHTML = html;
