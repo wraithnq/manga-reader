@@ -171,9 +171,13 @@ if (nextBtn) nextBtn.addEventListener("click", next);
 
 /* 🔴 CHANGE: убрали Space */
 window.addEventListener("keydown", (e) => {
+  const tag = document.activeElement?.tagName;
+
+  // Если пользователь печатает в input/textarea — ничего не делаем
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+
   if (e.key === "ArrowRight") next();
   if (e.key === "ArrowLeft") prev();
-  if (e.code === "Space") e.preventDefault();
 });
 
 /* 🔴 ADD: листание кликом по бокам */
