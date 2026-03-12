@@ -273,21 +273,24 @@ a{
    Reader image — НЕ ТРОГАЕМ
 ============================== */
 
-main img{
-  display:block;
-  max-width:100%;
-  height:auto;
-  margin:0 auto;
+main img,
+#page {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100vh - 120px);
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 /* ==============================
    Mobile
 ============================== */
 
-@media (max-width:900px){
-  .layout{
-    grid-template-columns:1fr;
-    padding:16px;
+@media (max-width: 900px){
+  #page{
+    max-height: calc(100vh - 80px);
+  }
   }
 
   .side{
